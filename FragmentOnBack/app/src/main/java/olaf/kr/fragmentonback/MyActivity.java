@@ -5,6 +5,8 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,7 +16,8 @@ import android.os.Build;
 import android.widget.Button;
 
 
-public class MyActivity extends Activity {
+public class MyActivity extends AppCompatActivity {
+    private static final String TAG = MyActivity.class.getSimpleName();
 
     public interface OnBackKeyPressedListener {
         public void onBack();
@@ -32,10 +35,23 @@ public class MyActivity extends Activity {
         setContentView(R.layout.activity_my);
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, OlafFragment.newInstance(0))
                     .commit();
         }
     }
+
+    public void switchFragment(Fragment fragment) {
+        Log.d(TAG, "switchFragment()");
+
+        getFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(R.animator.enter_from_bottom, R.animator.alpha_hide,
+                        R.animator.alpha_show, R.animator.leave_to_bottom)
+                .replace(R.id.container, fragment, null)
+                .addToBackStack(null)
+                .commit();
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -43,33 +59,6 @@ public class MyActivity extends Activity {
             mOnBackKeyPressedListener.onBack();
         } else {
             super.onBackPressed();
-        }
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_my, container, false);
-            Button btn = (Button) rootView.findViewById(R.id.btn);
-            btn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    getFragmentManager().beginTransaction()
-                            .replace(R.id.container, new OlafFragment(), null)
-                            .addToBackStack(null)
-                            .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                            .commit();
-                }
-            });
-            return rootView;
         }
     }
 }
