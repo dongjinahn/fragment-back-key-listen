@@ -2,6 +2,7 @@ package olaf.kr.fragmentonback;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -9,8 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.Switch;
 import android.widget.TextView;
 
 /**
@@ -23,6 +22,7 @@ public class OlafFragment extends Fragment implements MyActivity.OnBackKeyPresse
 
     private TextView mTxt;
     private Button mBtn;
+
 
     public static OlafFragment newInstance(int nth) {
         OlafFragment fragment = new OlafFragment();
@@ -38,7 +38,7 @@ public class OlafFragment extends Fragment implements MyActivity.OnBackKeyPresse
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        ((MyActivity) activity).setOnBackKeyPressedListener(this);
+        ((MyActivity) activity).pushOnBackKeyPressedListener(this);
     }
 
     @Override
@@ -57,20 +57,18 @@ public class OlafFragment extends Fragment implements MyActivity.OnBackKeyPresse
         mBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MyActivity) getActivity()).switchFragment(OlafFragment.newInstance(nth + 1));
+                String tag = String.format("%s,%d", OlafFragment.class.getCanonicalName(), nth);
+                ((MyActivity) getActivity()).switchFragment(OlafFragment.newInstance(nth + 1), tag);
             }
         });
     }
 
     @Override
     public void onBack() {
-//        if (mSwitch.isChecked()) {
-//            Vibrator v = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
-//            v.vibrate(500);
-//        } else {
-//            MyActivity myActivity = (MyActivity) getActivity();
-//            myActivity.setOnBackKeyPressedListener(null);
-//            myActivity.onBackPressed();
-//        }
+        FragmentManager fm = getActivity().getFragmentManager();
+
+        if (fm.getBackStackEntryCount() == 0) return;
+
+        fm.popBackStack();
     }
 }
