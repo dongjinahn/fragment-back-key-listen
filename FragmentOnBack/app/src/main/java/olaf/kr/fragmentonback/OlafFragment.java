@@ -38,6 +38,9 @@ public class OlafFragment extends Fragment implements MyActivity.OnBackKeyPresse
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+
+        if (getArguments().getInt(ARGS_NTH) == 0) return; // init
+
         ((MyActivity) activity).pushOnBackKeyPressedListener(this);
     }
 
@@ -57,18 +60,13 @@ public class OlafFragment extends Fragment implements MyActivity.OnBackKeyPresse
         mBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String tag = String.format("%s,%d", OlafFragment.class.getCanonicalName(), nth);
-                ((MyActivity) getActivity()).switchFragment(OlafFragment.newInstance(nth + 1), tag);
+                ((MyActivity) getActivity()).switchFragment(OlafFragment.newInstance(nth + 1));
             }
         });
     }
 
     @Override
     public void onBack() {
-        FragmentManager fm = getActivity().getFragmentManager();
-
-        if (fm.getBackStackEntryCount() == 0) return;
-
-        fm.popBackStack();
+        getFragmentManager().popBackStack();
     }
 }
